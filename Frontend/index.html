@@ -48,5 +48,57 @@
             }
         }
     </script>
+    <div id="urunler-alani" style="border: 1px solid #ccc; padding: 20px; margin-top: 20px;">
+    <h2>🛒 Güncel Stok Durumu</h2>
+    <ul id="urun-listesi">
+        <li>Henüz veri çekilmedi...</li>
+    </ul>
+    <button onclick="stoklariGetir()">Stokları Güncelle</button>
+</div>
+
+<script>
+    async function stoklariGetir() {
+        console.log("Butona basıldı, veri çekiliyor..."); // Konsolda bunu görmelisin
+        
+        try {
+            const cevap = await fetch('http://127.0.0.1:8000/stok');
+            const veri = await cevap.json();
+            
+            console.log("Gelen Veri:", veri); // Gelen veriyi kontrol et
+            
+            const listeElementi = document.getElementById('urun-listesi');
+            listeElementi.innerHTML = ''; 
+
+            veri.guncel_stok.forEach(urun => {
+                const madde = document.createElement('li');
+                madde.style.padding = "5px";
+                // Eski madde.innerHTML yerine bunu yapıştır:
+madde.innerHTML = `
+    <strong>${urun.urun_adi}</strong> - ${urun.fiyat} TL 
+    (Stok: <span id="stok-${urun.urun_adi}">${urun.stok_adedi}</span>)
+    <button onclick="satinAl('${urun.urun_adi}')" style="margin-left:10px; cursor:pointer;">🛒 Satın Al</button>
+`;
+                listeElementi.appendChild(madde);
+            });
+        } catch (hata) {
+            console.error("Eyvah! Veri çekilirken hata oluştu:", hata);
+            alert("Backend'e bağlanılamadı. FastAPI çalışıyor mu?");
+        }
+    }
+    async function satinAl(isim) {
+    const cevap = await fetch(`http://127.0.0.1:8000/satin-al/${isim}`, {
+        method: 'POST'
+    });
+    
+    const sonuc = await cevap.json();
+    
+    if (cevap.ok) {
+        alert(sonuc.mesaj);
+        stoklariGetir(); // Listeyi otomatik yenile ki yeni stoğu görelim!
+    } else {
+        alert("Hata: " + sonuc.detail);
+    }
+}
+</script>
 </body>
 </html>
