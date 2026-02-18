@@ -2,103 +2,109 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Benim Teknoloji Mağazam</title>
+    <title>🚀 Pro Mağaza Yönetimi</title>
     <style>
-        /* Biraz görsellik katalım */
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .urun-kartı { background: white; padding: 15px; border-radius: 8px; width: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h2 { color: #333; }
-        .fiyat { color: green; font-weight: bold; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; color: #333; }
+        .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto 20px auto; }
+        input { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; width: calc(100% - 22px); }
+        button { border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-ekle { background-color: #27ae60; color: white; width: 100%; }
+        .btn-sil { background-color: #e74c3c; color: white; margin-left: 5px; }
+        .btn-satin-al { background-color: #007bff; color: white; }
+        .arama-kutusu { background-color: #fff; border: 2px solid #007bff; font-size: 1.1em; }
+        li { background: #fff; margin-bottom: 10px; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; }
+        .stok-sayi { font-weight: bold; padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <h1>Mağaza Yönetim Paneli</h1>
+    <h1>📱 Pro Mağaza Yönetim Paneli</h1>
 
-    <div class="urun-kartı">
-        <h2 id="urun-adi">Ürün Yükleniyor...</h2>
-        <p>Fiyat: <span id="urun-fiyat" class="fiyat">0</span> TL</p>
-        <p>Stok: <span id="urun-stok">0</span> adet</p>
-        <button onclick="satinAl()">Satın Al</button>
+    <div class="panel">
+        <input type="text" id="arama-input" class="arama-kutusu" placeholder="🔍 Ürün ara (Yazdıkça filtrelenir...)" onkeyup="aramaYap()">
+    </div>
+
+    <div class="panel">
+        <h3>➕ Yeni Ürün Ekle</h3>
+        <input type="text" id="yeni-ad" placeholder="Ürün Adı">
+        <input type="number" id="yeni-fiyat" placeholder="Fiyat">
+        <input type="number" id="yeni-stok" placeholder="Stok">
+        <button onclick="yeniUrunEkle()" class="btn-ekle">Ekle ✨</button>
+    </div>
+
+    <div class="panel">
+        <h3>🛒 Ürün Listesi</h3>
+        <ul id="urun-listesi"></ul>
     </div>
 
     <script>
-        // Şimdilik verileri elimizle yazıyoruz, 
-        // ileride burayı Backend (Python) ile bağlayacağız!
-        let urun = {
-            ad: "Macbook Air",
-            fiyat: 40000,
-            stok: 5
-        };
+        let tumUrunler = []; // Arama yaparken kullanmak için tüm ürünleri burada tutacağız
 
-        // Ekranda verileri gösterelim
-        document.getElementById("urun-adi").innerText = urun.ad;
-        document.getElementById("urun-fiyat").innerText = urun.fiyat;
-        document.getElementById("urun-stok").innerText = urun.stok;
-
-        function satinAl() {
-            if(urun.stok > 0) {
-                urun.stok -= 1;
-                document.getElementById("urun-stok").innerText = urun.stok;
-                alert("Ürün satıldı!");
-            } else {
-                alert("Stok bitti!");
-            }
+        async function stoklariGetir() {
+            try {
+                const cevap = await fetch('http://127.0.0.1:8000/stok');
+                const veri = await cevap.json();
+                tumUrunler = veri.guncel_stok; // Veriyi hafızaya al
+                listeyiCiz(tumUrunler); // Ekrana çiz
+            } catch (hata) { console.error(hata); }
         }
-    </script>
-    <div id="urunler-alani" style="border: 1px solid #ccc; padding: 20px; margin-top: 20px;">
-    <h2>🛒 Güncel Stok Durumu</h2>
-    <ul id="urun-listesi">
-        <li>Henüz veri çekilmedi...</li>
-    </ul>
-    <button onclick="stoklariGetir()">Stokları Güncelle</button>
-</div>
 
-<script>
-    async function stoklariGetir() {
-        console.log("Butona basıldı, veri çekiliyor..."); // Konsolda bunu görmelisin
-        
-        try {
-            const cevap = await fetch('http://127.0.0.1:8000/stok');
-            const veri = await cevap.json();
-            
-            console.log("Gelen Veri:", veri); // Gelen veriyi kontrol et
-            
+        function listeyiCiz(liste) {
             const listeElementi = document.getElementById('urun-listesi');
             listeElementi.innerHTML = ''; 
-
-            veri.guncel_stok.forEach(urun => {
+            liste.forEach(urun => {
                 const madde = document.createElement('li');
-                madde.style.padding = "5px";
-                // Eski madde.innerHTML yerine bunu yapıştır:
-madde.innerHTML = `
-    <strong>${urun.urun_adi}</strong> - ${urun.fiyat} TL 
-    (Stok: <span id="stok-${urun.urun_adi}">${urun.stok_adedi}</span>)
-    <button onclick="satinAl('${urun.urun_adi}')" style="margin-left:10px; cursor:pointer;">🛒 Satın Al</button>
-`;
+                const stokRenk = urun.stok_adedi < 3 ? "#e74c3c" : "#f39c12";
+                madde.innerHTML = `
+                    <div>
+                        <strong>${urun.urun_adi}</strong> - ${urun.fiyat} TL<br>
+                        <span class="stok-sayi" style="color: ${stokRenk};">Stok: ${urun.stok_adedi}</span>
+                    </div>
+                    <div>
+                        <button class="btn-satin-al" onclick="satinAl('${urun.urun_adi}')">🛒 Satın Al</button>
+                        <button class="btn-sil" onclick="urunSil('${urun.urun_adi}')">🗑️ Sil</button>
+                    </div>
+                `;
                 listeElementi.appendChild(madde);
             });
-        } catch (hata) {
-            console.error("Eyvah! Veri çekilirken hata oluştu:", hata);
-            alert("Backend'e bağlanılamadı. FastAPI çalışıyor mu?");
         }
-    }
-    async function satinAl(isim) {
-    const cevap = await fetch(`http://127.0.0.1:8000/satin-al/${isim}`, {
-        method: 'POST'
-    });
-    
-    const sonuc = await cevap.json();
-    
-    if (cevap.ok) {
-        alert(sonuc.mesaj);
-        stoklariGetir(); // Listeyi otomatik yenile ki yeni stoğu görelim!
-    } else {
-        alert("Hata: " + sonuc.detail);
-    }
-}
-</script>
+
+        // --- ARAMA FONKSİYONU ---
+        function aramaYap() {
+            const arananKelime = document.getElementById('arama-input').value.toLowerCase();
+            const filtrelenmişListe = tumUrunler.filter(urun => 
+                urun.urun_adi.toLowerCase().includes(arananKelime)
+            );
+            listeyiCiz(filtrelenmişListe);
+        }
+
+        async function yeniUrunEkle() {
+            const ad = document.getElementById('yeni-ad').value;
+            const fiyat = document.getElementById('yeni-fiyat').value;
+            const stok = document.getElementById('yeni-stok').value;
+            await fetch('http://127.0.0.1:8000/urun-ekle', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ ad: ad, fiyat: parseFloat(fiyat), stok: parseInt(stok) })
+            });
+            stoklariGetir();
+        }
+
+        async function satinAl(isim) {
+            await fetch(`http://127.0.0.1:8000/satin-al/${isim}`, { method: 'POST' });
+            stoklariGetir();
+        }
+
+        // --- SİLME FONKSİYONU ---
+        async function urunSil(isim) {
+            if(confirm(`'${isim}' ürününü silmek istediğine emin misin?`)) {
+                await fetch(`http://127.0.0.1:8000/urun-sil/${isim}`, { method: 'DELETE' });
+                stoklariGetir();
+            }
+        }
+
+        window.onload = stoklariGetir;
+    </script>
 </body>
 </html>
+  
