@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Teknoloji Mağazam</title>
+    <style>
+        /* Biraz görsellik katalım */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .urun-kartı { background: white; padding: 15px; border-radius: 8px; width: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        .fiyat { color: green; font-weight: bold; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h1>Mağaza Yönetim Paneli</h1>
+
+    <div class="urun-kartı">
+        <h2 id="urun-adi">Ürün Yükleniyor...</h2>
+        <p>Fiyat: <span id="urun-fiyat" class="fiyat">0</span> TL</p>
+        <p>Stok: <span id="urun-stok">0</span> adet</p>
+        <button onclick="satinAl()">Satın Al</button>
+    </div>
+
+    <script>
+        // Şimdilik verileri elimizle yazıyoruz, 
+        // ileride burayı Backend (Python) ile bağlayacağız!
+        let urun = {
+            ad: "Macbook Air",
+            fiyat: 40000,
+            stok: 5
+        };
+
+        // Ekranda verileri gösterelim
+        document.getElementById("urun-adi").innerText = urun.ad;
+        document.getElementById("urun-fiyat").innerText = urun.fiyat;
+        document.getElementById("urun-stok").innerText = urun.stok;
+
+        function satinAl() {
+            if(urun.stok > 0) {
+                urun.stok -= 1;
+                document.getElementById("urun-stok").innerText = urun.stok;
+                alert("Ürün satıldı!");
+            } else {
+                alert("Stok bitti!");
+            }
+        }
+    </script>
+</body>
+</html>
