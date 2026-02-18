@@ -4,25 +4,25 @@ def veritabani_hazirla():
     baglanti = sqlite3.connect("dükkan.db")
     kursor = baglanti.cursor()
     
-    # Ürünler tablosunu oluşturalım
+    # 1. Ürünler tablosuna 'resim_url' sütunu ekleyelim (Eğer yoksa)
     kursor.execute('''
         CREATE TABLE IF NOT EXISTS urunler (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ad TEXT NOT NULL,
             fiyat REAL,
-            stok INTEGER
+            stok INTEGER,
+            resim_url TEXT DEFAULT 'https://via.placeholder.com/150'
         )
     ''')
     
-    # Eğer tablo boşsa ilk ürünleri ekleyelim
-    kursor.execute("SELECT COUNT(*) FROM urunler")
-    if kursor.fetchone()[0] == 0:
-        ilk_urunler = [
-            ('Laptop', 15000, 10),
-            ('Mouse', 250, 50),
-            ('Klavye', 500, 20)
-        ]
-        kursor.executemany("INSERT INTO urunler (ad, fiyat, stok) VALUES (?, ?, ?)", ilk_urunler)
+    # 2. Satışlar tablosunu oluşturalım (Kim neyi ne zaman aldı?)
+    kursor.execute('''
+        CREATE TABLE IF NOT EXISTS satislar (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            urun_adi TEXT,
+            tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     
     baglanti.commit()
     baglanti.close()

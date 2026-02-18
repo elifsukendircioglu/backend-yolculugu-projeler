@@ -2,109 +2,172 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>🚀 Pro Mağaza Yönetimi</title>
+    <title>💎 Efsane Teknoloji Mağazası</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; color: #333; }
-        .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto 20px auto; }
-        input { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; width: calc(100% - 22px); }
-        button { border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-ekle { background-color: #27ae60; color: white; width: 100%; }
-        .btn-sil { background-color: #e74c3c; color: white; margin-left: 5px; }
-        .btn-satin-al { background-color: #007bff; color: white; }
-        .arama-kutusu { background-color: #fff; border: 2px solid #007bff; font-size: 1.1em; }
-        li { background: #fff; margin-bottom: 10px; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; }
-        .stok-sayi { font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+        body { font-family: 'Poppins', sans-serif; background: #eef2f3; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { display: flex; gap: 20px; max-width: 1200px; width: 100%; }
+        .ana-bolum { flex: 3; }
+        .yan-panel { flex: 1; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: fit-content; }
+        .panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .urun-listesi { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .urun-kart { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 10px; text-align: center; }
+        .urun-kart img {
+    width: 100%;
+    height: 150px;       /* Yüksekliği biraz artırdık */
+    object-fit: contain; /* 'cover' yerine 'contain' yaparsak resmin tamamı görünür */
+    background-color: #f9f9f9; /* Resim sığmazsa kenarlar boş kalmasın diye hafif gri fon */
+    border-radius: 8px;
+}
+        .stok-kritik { color: red; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        input { padding: 8px; margin: 5px 0; width: 90%; border-radius: 5px; border: 1px solid #ccc; }
+        button { cursor: pointer; border: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .btn-al { background: #007bff; color: white; width: 100%; margin-top: 5px; }
+        .btn-sil { background: #ff4757; color: white; font-size: 10px; margin-top: 5px; }
     </style>
 </head>
+<div class="container" style="margin-bottom: 20px;">
+    <div class="panel" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+        <h4>💰 Toplam Ciro</h4>
+        <h2 id="toplam-ciro">0 TL</h2>
+    </div>
+    <div class="panel" style="flex: 1; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; text-align: center;">
+        <h4>🔥 En Çok Satan</h4>
+        <h2 id="en-populer">-</h2>
+    </div>
+</div>
 <body>
 
-    <h1>📱 Pro Mağaza Yönetim Paneli</h1>
-
-    <div class="panel">
-        <input type="text" id="arama-input" class="arama-kutusu" placeholder="🔍 Ürün ara (Yazdıkça filtrelenir...)" onkeyup="aramaYap()">
+    <h1>💎 Efsane Teknoloji Mağazası</h1>
+    <div class="container" style="margin-bottom: 20px; display: flex; gap: 20px; width: 100%; max-width: 1200px;">
+    <div class="panel" style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; border: none;">
+        <h4 style="margin: 0; opacity: 0.8;">💰 Toplam Ciro</h4>
+        <h2 id="toplam-ciro" style="margin: 10px 0 0 0; font-size: 2.5em;">0 TL</h2>
     </div>
-
-    <div class="panel">
-        <h3>➕ Yeni Ürün Ekle</h3>
-        <input type="text" id="yeni-ad" placeholder="Ürün Adı">
-        <input type="number" id="yeni-fiyat" placeholder="Fiyat">
-        <input type="number" id="yeni-stok" placeholder="Stok">
-        <button onclick="yeniUrunEkle()" class="btn-ekle">Ekle ✨</button>
+    <div class="panel" style="flex: 1; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; text-align: center; border: none;">
+        <h4 style="margin: 0; opacity: 0.8;">🔥 En Çok Satan</h4>
+        <h2 id="en-populer" style="margin: 10px 0 0 0; font-size: 2em;">-</h2>
     </div>
+</div>
 
-    <div class="panel">
-        <h3>🛒 Ürün Listesi</h3>
-        <ul id="urun-listesi"></ul>
+    <div class="container">
+        <div class="ana-bolum">
+            <div class="panel">
+                <input type="text" id="arama" placeholder="🔍 Ürünlerde ara..." onkeyup="aramaYap()">
+            </div>
+
+            <div class="panel">
+                <h3>➕ Yeni Ürün</h3>
+                <input type="text" id="ad" placeholder="Ad">
+                <input type="number" id="fiyat" placeholder="Fiyat">
+                <input type="number" id="stok" placeholder="Stok">
+                <input type="text" id="resim" placeholder="Resim URL (Link)">
+                <button onclick="yeniUrunEkle()" style="background: #2ed573; color: white; width: 100%;">Dükkana Koy ✨</button>
+            </div>
+
+            <div class="panel">
+                <h3>📦 Raflar</h3>
+                <div id="urun-grid" class="urun-listesi"></div>
+            </div>
+        </div>
+
+        <div class="yan-panel">
+            <h3>📝 Son Satışlar</h3>
+            <ul id="satis-gecmisi" style="font-size: 13px; color: #555;"></ul>
+        </div>
     </div>
 
     <script>
-        let tumUrunler = []; // Arama yaparken kullanmak için tüm ürünleri burada tutacağız
+        let tumUrunler = [];
 
-        async function stoklariGetir() {
-            try {
-                const cevap = await fetch('http://127.0.0.1:8000/stok');
-                const veri = await cevap.json();
-                tumUrunler = veri.guncel_stok; // Veriyi hafızaya al
-                listeyiCiz(tumUrunler); // Ekrana çiz
-            } catch (hata) { console.error(hata); }
+       async function veriYukle() {
+    // 1. Ürünleri Çek
+    const urunCevap = await fetch('http://127.0.0.1:8000/stok');
+    const urunVeri = await urunCevap.json();
+    tumUrunler = urunVeri.guncel_stok;
+    cizUrunler(tumUrunler);
+
+    // 2. Satış Geçmişini Çek
+    const satisCevap = await fetch('http://127.0.0.1:8000/satis-gecmisi');
+    const satisVeri = await satisCevap.json();
+    const satisListe = document.getElementById('satis-gecmisi');
+    satisListe.innerHTML = satisVeri.satislar.map(s => `<li>✅ ${s.urun} (${s.tarih.slice(11,16)})</li>`).join('');
+
+    // 3. YENİ: Mağaza Özetini (Ciro ve Popüler Ürün) Çek
+    const ozetCevap = await fetch('http://127.0.0.1:8000/magaza-ozet');
+    const ozetVeri = await ozetCevap.json();
+    
+    // HTML'deki ciro ve popüler ürün yazılarını güncelle
+    document.getElementById('toplam-ciro').innerText = ozetVeri.toplam_ciro + " TL";
+    document.getElementById('en-populer').innerText = ozetVeri.en_populer;
+}
+
+        function cizUrunler(liste) {
+            const grid = document.getElementById('urun-grid');
+            grid.innerHTML = liste.map(u => `
+                <div class="urun-kart">
+                    <img src="${u.resim_url || 'https://via.placeholder.com/150'}" alt="urun">
+                    <h4>${u.urun_adi}</h4>
+                    <p>${u.fiyat} TL</p>
+                    <p class="${u.stok_adedi < 3 ? 'stok-kritik' : ''}">Stok: ${u.stok_adedi}</p>
+                    <button class="btn-al" onclick="satinAl('${u.urun_adi}')">Satın Al</button>
+                    <button class="btn-sil" onclick="sil('${u.urun_adi}')">Sil</button>
+                </div>
+            `).join('');
         }
 
-        function listeyiCiz(liste) {
-            const listeElementi = document.getElementById('urun-listesi');
-            listeElementi.innerHTML = ''; 
-            liste.forEach(urun => {
-                const madde = document.createElement('li');
-                const stokRenk = urun.stok_adedi < 3 ? "#e74c3c" : "#f39c12";
-                madde.innerHTML = `
-                    <div>
-                        <strong>${urun.urun_adi}</strong> - ${urun.fiyat} TL<br>
-                        <span class="stok-sayi" style="color: ${stokRenk};">Stok: ${urun.stok_adedi}</span>
-                    </div>
-                    <div>
-                        <button class="btn-satin-al" onclick="satinAl('${urun.urun_adi}')">🛒 Satın Al</button>
-                        <button class="btn-sil" onclick="urunSil('${urun.urun_adi}')">🗑️ Sil</button>
-                    </div>
-                `;
-                listeElementi.appendChild(madde);
-            });
+       async function yeniUrunEkle() {
+    const ad = document.getElementById('ad').value;
+    const fiyat = document.getElementById('fiyat').value;
+    const stok = document.getElementById('stok').value;
+    const resim = document.getElementById('resim').value; // HTML'deki input ID'si 'resim' olmalı
+
+    if(!ad || !fiyat || !stok) {
+        alert("Lütfen alanları doldurun!");
+        return;
+    }
+
+    const veri = {
+        ad: ad,
+        fiyat: parseFloat(fiyat),
+        stok: parseInt(stok),
+        resim_url: resim || "https://via.placeholder.com/150" // Burası Python'dakiyle aynı olmalı!
+    };
+
+    const cevap = await fetch('http://127.0.0.1:8000/urun-ekle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(veri)
+    });
+
+    if (cevap.ok) {
+        alert("Eklendi!");
+        veriYukle(); 
+    } else {
+        const hata = await cevap.json();
+        console.log("Hata Detayı:", hata);
+        alert("Ekleme başarısız! Console'a bak.");
+    }
+}
+
+        async function satinAl(ad) {
+            await fetch(`http://127.0.0.1:8000/satin-al/${ad}`, { method: 'POST' });
+            veriYukle();
         }
 
-        // --- ARAMA FONKSİYONU ---
-        function aramaYap() {
-            const arananKelime = document.getElementById('arama-input').value.toLowerCase();
-            const filtrelenmişListe = tumUrunler.filter(urun => 
-                urun.urun_adi.toLowerCase().includes(arananKelime)
-            );
-            listeyiCiz(filtrelenmişListe);
-        }
-
-        async function yeniUrunEkle() {
-            const ad = document.getElementById('yeni-ad').value;
-            const fiyat = document.getElementById('yeni-fiyat').value;
-            const stok = document.getElementById('yeni-stok').value;
-            await fetch('http://127.0.0.1:8000/urun-ekle', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ ad: ad, fiyat: parseFloat(fiyat), stok: parseInt(stok) })
-            });
-            stoklariGetir();
-        }
-
-        async function satinAl(isim) {
-            await fetch(`http://127.0.0.1:8000/satin-al/${isim}`, { method: 'POST' });
-            stoklariGetir();
-        }
-
-        // --- SİLME FONKSİYONU ---
-        async function urunSil(isim) {
-            if(confirm(`'${isim}' ürününü silmek istediğine emin misin?`)) {
-                await fetch(`http://127.0.0.1:8000/urun-sil/${isim}`, { method: 'DELETE' });
-                stoklariGetir();
+        async function sil(ad) {
+            if(confirm("Silinsin mi?")) {
+                await fetch(`http://127.0.0.1:8000/urun-sil/${ad}`, { method: 'DELETE' });
+                veriYukle();
             }
         }
 
-        window.onload = stoklariGetir;
+        function aramaYap() {
+            const kelime = document.getElementById('arama').value.toLowerCase();
+            cizUrunler(tumUrunler.filter(u => u.urun_adi.toLowerCase().includes(kelime)));
+        }
+
+        window.onload = veriYukle;
     </script>
 </body>
 </html>
-  
