@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* Apple tarzı modern renk paleti */
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 0.3);
@@ -40,7 +39,6 @@
 
         .container { display: flex; gap: 20px; max-width: 1200px; width: 100%; flex-wrap: wrap; }
         
-        /* Glassmorphism Panel Tasarımı */
         .panel { 
             background: var(--glass-bg); 
             backdrop-filter: blur(15px);
@@ -51,7 +49,6 @@
             margin-bottom: 20px;
         }
 
-        /* Dashbord Kartları */
         .stats-card {
             flex: 1;
             min-width: 200px;
@@ -61,7 +58,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        /* Ürün Kartları */
         .urun-listesi { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
         .urun-kart { 
             position: relative;
@@ -77,7 +73,6 @@
         
         .urun-kart img { width: 100%; height: 140px; object-fit: contain; border-radius: 10px; background: #f9f9f9; }
 
-        /* Butonlar */
         button { 
             cursor: pointer; border: none; padding: 10px 15px; border-radius: 10px; 
             font-weight: bold; display: flex; align-items: center; gap: 8px; justify-content: center;
@@ -99,6 +94,11 @@
 
         .stok-kritik { color: var(--danger-color); font-weight: bold; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Dinamik Filtre Butonları İçin Stil */
+        .filtre-alani { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .filtre-alani button { background: var(--glass-bg); color: var(--text-color); border: 1px solid var(--glass-border); }
+        .filtre-alani button:hover { background: var(--accent-color); color: white; }
     </style>
 </head>
 <body>
@@ -132,12 +132,7 @@
                     <button class="btn-wa" onclick="eksikleriPaylas()">🟢 Eksikleri Gönder</button>
                     <button onclick="raporuIndir()" style="background:#2f3542; color:white;">📥 Rapor Al</button>
                 </div>
-                <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
-                    <button onclick="kategoriFiltrele('Hepsi')">Hepsi</button>
-                    <button onclick="kategoriFiltrele('Telefon')" style="background:#ffa502; color:white;">📱 Telefon</button>
-                    <button onclick="kategoriFiltrele('Bilgisayar')" style="background:#2ed573; color:white;">💻 Bilgisayar</button>
-                    <button onclick="kategoriFiltrele('Aksesuar')" style="background:#764ba2; color:white;">🎧 Aksesuar</button>
-                </div>
+                <div id="filtre-butonlari" class="filtre-alani"></div>
             </div>
 
             <div class="panel">
@@ -153,12 +148,14 @@
                 <input type="number" id="fiyat" placeholder="Fiyat">
                 <input type="number" id="stok" placeholder="Stok">
                 <input type="text" id="resim" placeholder="Resim URL">
-                <select id="kategori-sec">
-                    <option value="Telefon">📱 Telefon</option>
-                    <option value="Bilgisayar">💻 Bilgisayar</option>
-                    <option value="Aksesuar">🎧 Aksesuar</option>
-                    <option value="Diğer">📦 Diğer</option>
-                </select>
+                
+                <input type="text" id="kategori-input" list="kategori-listesi" placeholder="Kategori Yaz veya Seç">
+                <datalist id="kategori-listesi">
+                    <option value="Telefon">
+                    <option value="Bilgisayar">
+                    <option value="Aksesuar">
+                </datalist>
+
                 <button onclick="yeniUrunEkle()" style="background:#2ed573; color:white; width:100%; margin-top:10px;">Dükkana Ekle ✨</button>
             </div>
 
@@ -173,7 +170,6 @@
         let tumUrunler = [];
         let satisChart;
 
-        // AKILLI BİLDİRİM SİSTEMİ
         function bildirim(msg, tip = 'success') {
             const toast = document.createElement('div');
             toast.style = `position:fixed; top:20px; right:20px; padding:15px 25px; border-radius:12px; color:white; font-weight:bold; z-index:10000; background:${tip==='success'?'#2ed573':'#ff4757'}; box-shadow:0 10px 30px rgba(0,0,0,0.2);`;
@@ -193,25 +189,41 @@
                 const stokVeri = await stokRes.json();
                 tumUrunler = stokVeri.guncel_stok;
                 cizUrunler(tumUrunler);
+                
+                // KATEGORİ BUTONLARINI VE LİSTESİNİ GÜNCELLE
+                guncelleDinamikBilesenler(tumUrunler);
 
                 const satisVeri = await satisRes.json();
-                document.getElementById('satis-gecmisi').innerHTML = satisVeri.satislar.slice(-5).reverse().map(s => `<li>✅ ${s.urun}</li>`).join('');
+                document.getElementById('satis-gecmisi').innerHTML = satisVeri.satislar.slice(0, 5).map(s => `<li>✅ ${s.urun}</li>`).join('');
                 grafigiGuncelle(satisVeri.satislar);
 
                 const ozetVeri = await ozetRes.json();
                 document.getElementById('toplam-ciro').innerText = ozetVeri.toplam_ciro + " TL";
                 document.getElementById('en-populer').innerText = ozetVeri.en_populer;
 
-                // AI ASİSTAN TAVSİYESİ
                 aiAsistan(ozetVeri.toplam_ciro, ozetVeri.en_populer);
 
             } catch (e) { console.error("Bağlantı hatası!"); }
         }
 
+        // KATEGORİ BUTONLARINI VE DATALIST'İ OTOMATİK OLUŞTURUR
+        function guncelleDinamikBilesenler(urunler) {
+            const kategoriler = [...new Set(urunler.map(u => u.kategori))];
+            
+            // 1. Filtre Butonlarını Oluştur
+            const filtreDiv = document.getElementById('filtre-butonlari');
+            filtreDiv.innerHTML = `<button onclick="kategoriFiltrele('Hepsi')">Hepsi</button>` + 
+                kategoriler.map(k => `<button onclick="kategoriFiltrele('${k}')">${k}</button>`).join('');
+
+            // 2. Yeni Ürün Ekleme Listesini Güncelle
+            const datalist = document.getElementById('kategori-listesi');
+            datalist.innerHTML = kategoriler.map(k => `<option value="${k}">`).join('');
+        }
+
         function aiAsistan(ciro, pop) {
             const not = document.getElementById('ai-notu');
             if(ciro === 0) not.innerText = "💡 Henüz satış yok, ürün ekleyerek dükkanı canlandır!";
-            else if(ciro < 5000) not.innerText = "💡 Satışlar fena değil, Aksesuar kategorisinde kampanya yapabilirsin.";
+            else if(ciro < 5000) not.innerText = "💡 Satışlar fena değil, yeni kategoriler eklemeyi dene.";
             else not.innerText = `🚀 Harika! ${pop} çok iyi gidiyor, stokları taze tut.`;
         }
 
@@ -240,18 +252,38 @@
             veriYukle();
         }
 
+        async function sil(ad) {
+            if(confirm("Bu ürünü silmek istediğine emin misin?")) {
+                await fetch(`http://127.0.0.1:8000/urun-sil/${ad}`, {method:'DELETE'});
+                bildirim("Ürün silindi.");
+                veriYukle();
+            }
+        }
+
         async function yeniUrunEkle() {
+            const katInput = document.getElementById('kategori-input').value;
+            if(!katInput) { bildirim("Lütfen bir kategori yazın veya seçin!", "error"); return; }
+
             const veri = {
                 ad: document.getElementById('ad').value,
                 fiyat: parseFloat(document.getElementById('fiyat').value),
                 stok: parseInt(document.getElementById('stok').value),
                 resim_url: document.getElementById('resim').value,
-                kategori: document.getElementById('kategori-sec').value
+                kategori: katInput
             };
+            
             await fetch('http://127.0.0.1:8000/urun-ekle', {
                 method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(veri)
             });
-            bildirim("Yeni ürün rafa eklendi! ✨");
+            
+            bildirim("Yeni ürün ve kategori eklendi! ✨");
+            // Formu temizle
+            document.getElementById('ad').value = "";
+            document.getElementById('fiyat').value = "";
+            document.getElementById('stok').value = "";
+            document.getElementById('resim').value = "";
+            document.getElementById('kategori-input').value = "";
+            
             veriYukle();
         }
 
@@ -283,14 +315,17 @@
         }
 
         function raporuIndir() { window.location.href = "http://127.0.0.1:8000/stok-indir"; }
+        
         function kategoriFiltrele(kat) {
             if(kat === 'Hepsi') cizUrunler(tumUrunler);
             else cizUrunler(tumUrunler.filter(u => u.kategori === kat));
         }
+
         function aramaYap() {
             const k = document.getElementById('arama').value.toLowerCase();
             cizUrunler(tumUrunler.filter(u => u.urun_adi.toLowerCase().includes(k)));
         }
+
         function darkModeToggle() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('tema', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
