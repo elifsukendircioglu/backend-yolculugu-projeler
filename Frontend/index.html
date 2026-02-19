@@ -3,62 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💎 Efsane Teknoloji Mağazası v2 - Final</title>
+    <title>💎 Efsane Teknoloji Mağazası v3 - Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #f0f2f5;
-            --panel-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #dddddd;
-            --accent-color: #007bff;
-            --success-color: #2ed573;
+            /* Apple tarzı modern renk paleti */
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-color: #2d3436;
+            --accent-color: #6c5ce7;
             --danger-color: #ff4757;
-            --shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         body.dark-mode {
-            --bg-color: #1a1a2e;
-            --panel-bg: #16213e;
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --glass-bg: rgba(22, 33, 62, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #e9ecef;
-            --border-color: #2d3436;
         }
 
         * { box-sizing: border-box; transition: 0.3s; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-color); color: var(--text-color); display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { display: flex; gap: 20px; max-width: 1200px; width: 100%; }
-        .panel { background: var(--panel-bg); padding: 20px; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border-color); }
         
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-gradient); 
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container { display: flex; gap: 20px; max-width: 1200px; width: 100%; flex-wrap: wrap; }
+        
+        /* Glassmorphism Panel Tasarımı */
+        .panel { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(15px);
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
+            border: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+
+        /* Dashbord Kartları */
+        .stats-card {
+            flex: 1;
+            min-width: 200px;
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Ürün Kartları */
         .urun-listesi { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .urun-kart { position: relative; background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; text-align: center; }
-        .kategori-etiket { position: absolute; top: 10px; right: 10px; background: var(--accent-color); color: white; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
+        .urun-kart { 
+            position: relative;
+            background: rgba(255, 255, 255, 0.5); 
+            border: 1px solid var(--glass-border); 
+            padding: 15px; 
+            border-radius: 15px; 
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        .urun-kart:hover { transform: translateY(-10px); background: white; }
+        .kategori-etiket { position: absolute; top: 10px; right: 10px; background: var(--accent-color); color: white; font-size: 10px; padding: 4px 10px; border-radius: 20px; }
         
-        .urun-kart img { width: 100%; height: 140px; object-fit: contain; background: #f9f9f9; border-radius: 8px; }
-        
-        input, select { padding: 10px; margin: 8px 0; width: 100%; border-radius: 8px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-color); }
-        button { cursor: pointer; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+        .urun-kart img { width: 100%; height: 140px; object-fit: contain; border-radius: 10px; background: #f9f9f9; }
+
+        /* Butonlar */
+        button { 
+            cursor: pointer; border: none; padding: 10px 15px; border-radius: 10px; 
+            font-weight: bold; display: flex; align-items: center; gap: 8px; justify-content: center;
+        }
         .btn-al { background: var(--accent-color); color: white; width: 100%; }
+        .btn-wa { background: #25D366; color: white; }
         .btn-tema { background: #2d3436; color: white; margin-bottom: 20px; }
-        
+
+        input, select { 
+            padding: 12px; margin: 8px 0; width: 100%; border-radius: 10px; 
+            border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        #ai-notu { 
+            font-style: italic; font-size: 0.9em; margin-top: 10px; 
+            border-left: 3px solid gold; padding-left: 10px; color: #fff;
+        }
+
         .stok-kritik { color: var(--danger-color); font-weight: bold; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
-    <h1>💎 Efsane Teknoloji Mağazası</h1>
+    <h1 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">💎 Efsane Teknoloji Mağazası v3</h1>
     <button class="btn-tema" onclick="darkModeToggle()">🌙 Modu Değiştir</button>
 
-    <div class="container" style="margin-bottom: 20px;">
-        <div class="panel" style="flex:1; background: linear-gradient(135deg, #667eea, #764ba2); color:white;">
+    <div class="container">
+        <div class="stats-card" style="background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);">
             <h4>💰 Toplam Ciro</h4>
             <h2 id="toplam-ciro">0 TL</h2>
+            <p id="ai-notu">Analiz yapılıyor...</p>
         </div>
-        <div class="panel" style="flex:1; background: linear-gradient(135deg, #11998e, #38ef7d); color:white;">
+        
+        <div class="stats-card" style="background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);">
             <h4>🔥 En Çok Satan</h4>
             <h2 id="en-populer">-</h2>
         </div>
-        <div class="panel" style="flex:2; min-height: 200px;">
+
+        <div class="panel" style="flex: 2; min-height: 200px;">
             <h4 style="margin-top:0;">📈 Satış Dağılımı</h4>
             <canvas id="satisGrafigi" style="max-height: 150px;"></canvas>
         </div>
@@ -67,25 +127,32 @@
     <div class="container">
         <div style="flex: 3;">
             <div class="panel">
-                <input type="text" id="arama" placeholder="🔍 Ürünlerde ara..." onkeyup="aramaYap()">
-                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                   <button onclick="kategoriFiltrele('Hepsi')" style="background:#747d8c; color:white;">Hepsi</button>
-                   <button onclick="kategoriFiltrele('Telefon')" style="background:#ffa502; color:white;">📱 Telefon</button>
-                   <button onclick="kategoriFiltrele('Bilgisayar')" style="background:#2ed573; color:white;">💻 Bilgisayar</button>
-                   <button onclick="kategoriFiltrele('Aksesuar')" style="background:#764ba2; color:white;">🎧 Aksesuar</button>
-                   <button onclick="kategoriFiltrele('Diğer')" style="background:#4b4b4b; color:white;">📦 Diğer</button> 
-                   <button onclick="raporuIndir()" style="background:#2f3542; color:white; margin-left: auto;">📥 Raporu İndir (Excel/CSV)</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="arama" placeholder="🔍 Ürünlerde ara..." onkeyup="aramaYap()" style="flex: 2;">
+                    <button class="btn-wa" onclick="eksikleriPaylas()">🟢 Eksikleri Gönder</button>
+                    <button onclick="raporuIndir()" style="background:#2f3542; color:white;">📥 Rapor Al</button>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                    <button onclick="kategoriFiltrele('Hepsi')">Hepsi</button>
+                    <button onclick="kategoriFiltrele('Telefon')" style="background:#ffa502; color:white;">📱 Telefon</button>
+                    <button onclick="kategoriFiltrele('Bilgisayar')" style="background:#2ed573; color:white;">💻 Bilgisayar</button>
+                    <button onclick="kategoriFiltrele('Aksesuar')" style="background:#764ba2; color:white;">🎧 Aksesuar</button>
                 </div>
             </div>
 
             <div class="panel">
-                <h3>➕ Yeni Ürün Ekle</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="text" id="ad" placeholder="Ad">
-                    <input type="number" id="fiyat" placeholder="Fiyat">
-                    <input type="number" id="stok" placeholder="Stok">
-                    <input type="text" id="resim" placeholder="Resim URL">
-                </div>
+                <h3>📦 Mağaza Rafları</h3>
+                <div id="urun-grid" class="urun-listesi"></div>
+            </div>
+        </div>
+
+        <div style="flex: 1.2;">
+            <div class="panel">
+                <h3>➕ Yeni Ürün</h3>
+                <input type="text" id="ad" placeholder="Ürün Adı">
+                <input type="number" id="fiyat" placeholder="Fiyat">
+                <input type="number" id="stok" placeholder="Stok">
+                <input type="text" id="resim" placeholder="Resim URL">
                 <select id="kategori-sec">
                     <option value="Telefon">📱 Telefon</option>
                     <option value="Bilgisayar">💻 Bilgisayar</option>
@@ -96,13 +163,6 @@
             </div>
 
             <div class="panel">
-                <h3>📦 Raflar</h3>
-                <div id="urun-grid" class="urun-listesi"></div>
-            </div>
-        </div>
-
-        <div style="flex: 1;">
-            <div class="panel">
                 <h3>📝 Son Satışlar</h3>
                 <ul id="satis-gecmisi" style="list-style:none; padding:0;"></ul>
             </div>
@@ -111,7 +171,16 @@
 
     <script>
         let tumUrunler = [];
-        let satisChart; // Grafik nesnesini saklamak için
+        let satisChart;
+
+        // AKILLI BİLDİRİM SİSTEMİ
+        function bildirim(msg, tip = 'success') {
+            const toast = document.createElement('div');
+            toast.style = `position:fixed; top:20px; right:20px; padding:15px 25px; border-radius:12px; color:white; font-weight:bold; z-index:10000; background:${tip==='success'?'#2ed573':'#ff4757'}; box-shadow:0 10px 30px rgba(0,0,0,0.2);`;
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity='0'; setTimeout(()=>toast.remove(), 500); }, 3000);
+        }
 
         async function veriYukle() {
             try {
@@ -126,48 +195,24 @@
                 cizUrunler(tumUrunler);
 
                 const satisVeri = await satisRes.json();
-                document.getElementById('satis-gecmisi').innerHTML = satisVeri.satislar.map(s => `<li>✅ ${s.urun}</li>`).join('');
-                
-                // GRAFİĞİ GÜNCELLE
+                document.getElementById('satis-gecmisi').innerHTML = satisVeri.satislar.slice(-5).reverse().map(s => `<li>✅ ${s.urun}</li>`).join('');
                 grafigiGuncelle(satisVeri.satislar);
 
                 const ozetVeri = await ozetRes.json();
                 document.getElementById('toplam-ciro').innerText = ozetVeri.toplam_ciro + " TL";
                 document.getElementById('en-populer').innerText = ozetVeri.en_populer;
-            } catch (error) {
-                console.error("Backend'e bağlanılamadı! Lütfen Uvicorn'u çalıştırın.");
-            }
+
+                // AI ASİSTAN TAVSİYESİ
+                aiAsistan(ozetVeri.toplam_ciro, ozetVeri.en_populer);
+
+            } catch (e) { console.error("Bağlantı hatası!"); }
         }
 
-        function grafigiGuncelle(satislar) {
-            const ctx = document.getElementById('satisGrafigi').getContext('2d');
-            
-            const sayim = {};
-            satislar.forEach(s => sayim[s.urun] = (sayim[s.urun] || 0) + 1);
-
-            const labels = Object.keys(sayim);
-            const data = Object.values(sayim);
-
-            if (satisChart) satisChart.destroy();
-
-            satisChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Satış Adedi',
-                        data: data,
-                        backgroundColor: '#764ba2',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-                }
-            });
+        function aiAsistan(ciro, pop) {
+            const not = document.getElementById('ai-notu');
+            if(ciro === 0) not.innerText = "💡 Henüz satış yok, ürün ekleyerek dükkanı canlandır!";
+            else if(ciro < 5000) not.innerText = "💡 Satışlar fena değil, Aksesuar kategorisinde kampanya yapabilirsin.";
+            else not.innerText = `🚀 Harika! ${pop} çok iyi gidiyor, stokları taze tut.`;
         }
 
         function cizUrunler(liste) {
@@ -175,18 +220,24 @@
             grid.innerHTML = liste.map(u => {
                 const bitti = u.stok_adedi <= 0;
                 return `
-                <div class="urun-kart" style="${bitti ? 'opacity: 0.5;' : ''}">
+                <div class="urun-kart" style="${bitti ? 'filter: grayscale(1); opacity: 0.6;' : ''}">
                     <span class="kategori-etiket">${u.kategori}</span>
-                    <img src="${u.resim_url}">
+                    <img src="${u.resim_url || 'https://via.placeholder.com/150'}">
                     <h4>${u.urun_adi}</h4>
                     <p><strong>${u.fiyat} TL</strong></p>
                     <p class="${u.stok_adedi < 3 && !bitti ? 'stok-kritik' : ''}">${bitti ? '❌ TÜKENDİ' : 'Stok: '+u.stok_adedi}</p>
-                    <button class="btn-al" onclick="satinAl('${u.urun_adi}')" ${bitti ? 'disabled style="background:gray"' : ''}>
+                    <button class="btn-al" onclick="satinAl('${u.urun_adi}')" ${bitti ? 'disabled' : ''}>
                         ${bitti ? 'Stok Yok' : 'Satın Al'}
                     </button>
-                    <button onclick="sil('${u.urun_adi}')" style="background:none; color:red; font-size:11px; margin-top:5px;">Sil</button>
+                    <button onclick="sil('${u.urun_adi}')" style="background:none; color:red; font-size:11px; margin-top:5px; width:100%;">Sil</button>
                 </div>`;
             }).join('');
+        }
+
+        async function satinAl(ad) {
+            await fetch(`http://127.0.0.1:8000/satin-al/${ad}`, {method:'POST'});
+            bildirim(`${ad} Satıldı! 💰`);
+            veriYukle();
         }
 
         async function yeniUrunEkle() {
@@ -194,39 +245,52 @@
                 ad: document.getElementById('ad').value,
                 fiyat: parseFloat(document.getElementById('fiyat').value),
                 stok: parseInt(document.getElementById('stok').value),
-                resim_url: document.getElementById('resim').value || "https://via.placeholder.com/150",
+                resim_url: document.getElementById('resim').value,
                 kategori: document.getElementById('kategori-sec').value
             };
             await fetch('http://127.0.0.1:8000/urun-ekle', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(veri)
+                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(veri)
             });
+            bildirim("Yeni ürün rafa eklendi! ✨");
             veriYukle();
         }
 
+        function eksikleriPaylas() {
+            const eksikler = tumUrunler.filter(u => u.stok_adedi <= 0).map(u => u.urun_adi);
+            if(eksikler.length === 0) { bildirim("Hiç eksik yok, her şey tam! ✨"); return; }
+            const mesaj = "🚨 *ACİL EKSİK LİSTESİ*:%0A" + eksikler.map(e => "- " + e).join("%0A");
+            window.open(`https://wa.me/?text=${mesaj}`, '_blank');
+        }
+
+        function grafigiGuncelle(satislar) {
+            const ctx = document.getElementById('satisGrafigi').getContext('2d');
+            const sayim = {};
+            satislar.forEach(s => sayim[s.urun] = (sayim[s.urun] || 0) + 1);
+            if (satisChart) satisChart.destroy();
+            satisChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sayim),
+                    datasets: [{
+                        label: 'Satış',
+                        data: Object.values(sayim),
+                        backgroundColor: '#6c5ce7',
+                        borderRadius: 8
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function raporuIndir() { window.location.href = "http://127.0.0.1:8000/stok-indir"; }
         function kategoriFiltrele(kat) {
             if(kat === 'Hepsi') cizUrunler(tumUrunler);
             else cizUrunler(tumUrunler.filter(u => u.kategori === kat));
         }
-
-        async function satinAl(ad) { 
-            await fetch(`http://127.0.0.1:8000/satin-al/${ad}`, {method:'POST'}); 
-            veriYukle(); 
-        }
-        
-        async function sil(ad) { 
-            if(confirm("Silmek istediğinize emin misiniz?")) { 
-                await fetch(`http://127.0.0.1:8000/urun-sil/${ad}`, {method:'DELETE'}); 
-                veriYukle(); 
-            } 
-        }
-
         function aramaYap() {
             const k = document.getElementById('arama').value.toLowerCase();
             cizUrunler(tumUrunler.filter(u => u.urun_adi.toLowerCase().includes(k)));
         }
-
         function darkModeToggle() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('tema', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
@@ -236,10 +300,6 @@
             if(localStorage.getItem('tema') === 'dark') document.body.classList.add('dark-mode');
             veriYukle();
         };
-        function raporuIndir() {
-    // Backend'deki dosyayı indirme linkine yönlendiriyoruz
-    window.location.href = "http://127.0.0.1:8000/stok-indir";
-}
     </script>
 </body>
 </html>
